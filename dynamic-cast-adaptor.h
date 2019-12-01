@@ -82,7 +82,7 @@ public:
 		iterator operator++(int)
 		{
 			iterator tmp(*this);
-			(*this)++;
+			++(*this);
 			return tmp;
 		}
 
