@@ -99,7 +99,7 @@ public:
 			end_{end}
 		{ }
 
-		BaseIt find_next_derived(BaseIt const& begin, BaseIt end) const
+		BaseIt find_next_derived(BaseIt const& begin, BaseIt const& end) const
 		{
 			using base_ptr_type = decltype(*BaseIt());
 			return std::find_if(begin, end, [](base_ptr_type const& p) {
