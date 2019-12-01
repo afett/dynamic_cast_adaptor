@@ -54,6 +54,7 @@ public:
 		using reference = value_type&;
 		using iterator_category = std::input_iterator_tag;
 
+		iterator() = default;
 		iterator(iterator const&) = default;
 		iterator(iterator &&) = default;
 		iterator & operator=(iterator const&) = default;
