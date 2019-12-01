@@ -113,12 +113,12 @@ public:
 
 	iterator begin() const
 	{
-		return iterator(begin_, end_);
+		return {begin_, end_};
 	}
 
 	iterator end() const
 	{
-		return iterator(end_, end_);
+		return {end_, end_};
 	}
 
 private:
