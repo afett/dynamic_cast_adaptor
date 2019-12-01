@@ -72,7 +72,7 @@ public:
 		iterator & operator++()
 		{
 			if (it_ != end_) {
-				it_ = find_next_derived(it_ + 1);
+				it_ = find_next_derived(it_ + 1, end_);
 			}
 			return *this;
 		}
@@ -93,14 +93,14 @@ public:
 		friend class dynamic_cast_adaptor;
 		explicit iterator(BaseIt const& it, BaseIt const& end)
 		:
-			it_{find_next_derived(it)},
+			it_{find_next_derived(it, end)},
 			end_{end}
 		{ }
 
-		BaseIt find_next_derived(BaseIt const& begin) const
+		BaseIt find_next_derived(BaseIt const& begin, BaseIt end) const
 		{
 			using base_ptr_type = decltype(*BaseIt());
-			return std::find_if(begin, end_, [](base_ptr_type const& p) {
+			return std::find_if(begin, end, [](base_ptr_type const& p) {
 				return std::dynamic_pointer_cast<Derived>(p) != nullptr;
 			});
 		}
