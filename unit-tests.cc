@@ -23,6 +23,7 @@ private:
 	void test_begin();
 	void test_increment();
 	void test_count_if();
+	void test_count();
 
 	CPPUNIT_TEST_SUITE(test);
 	CPPUNIT_TEST(test_range_for);
@@ -38,6 +39,7 @@ private:
 	CPPUNIT_TEST(test_begin);
 	CPPUNIT_TEST(test_increment);
 	CPPUNIT_TEST(test_count_if);
+	CPPUNIT_TEST(test_count);
 	CPPUNIT_TEST_SUITE_END();
 };
 
@@ -275,6 +277,17 @@ void test::test_count_if()
 	using diff_t = std::iterator_traits<decltype(begin(caster))>::difference_type;
 	CPPUNIT_ASSERT_EQUAL(diff_t(3), res);
 	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_count()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+
+	auto res = std::count(begin(caster), end(caster), v[3]);
+
+	using diff_t = std::iterator_traits<decltype(begin(caster))>::difference_type;
+	CPPUNIT_ASSERT_EQUAL(diff_t(1), res);
 }
 
 int main(int, char *[])
