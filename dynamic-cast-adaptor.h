@@ -93,7 +93,7 @@ public:
 
 	private:
 		friend class dynamic_cast_adaptor;
-		explicit iterator(BaseIt const& it, BaseIt const& end)
+		iterator(BaseIt const& it, BaseIt const& end)
 		:
 			it_{find_next_derived(it, end)},
 			end_{end}
