@@ -39,6 +39,7 @@ public:
 		end_{end}
 	{ }
 
+	dynamic_cast_adaptor() = delete;
 	dynamic_cast_adaptor(dynamic_cast_adaptor const&) = default;
 	dynamic_cast_adaptor(dynamic_cast_adaptor &&) = default;
 	dynamic_cast_adaptor & operator=(dynamic_cast_adaptor const&) = default;
