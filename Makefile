@@ -2,7 +2,7 @@ TEST=test_dynamic_cast_adaptor
 
 CXX ?= g++
 CXXFLAGS=-Wall -Werror -Wextra -pedantic -std=c++11
-CPPFLAGS= -D_GLIBCXX_DEBUG
+#CPPFLAGS= -D_GLIBCXX_DEBUG
 LDFLAGS=
 
 DEPS = cppunit
