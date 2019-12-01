@@ -10,7 +10,9 @@ OBJ=$(SRC:%.cc=%.o)
 
 all: $(TARGET)
 
-$(TARGET): $(OBJ) dynamic-cast-adaptor.h
+$(OBJ): $(SRC) dynamic-cast-adaptor.h
+
+$(TARGET): $(OBJ)
 	$(CXX) $(LDFLAGS) $^ -o $@
 
 clean:
