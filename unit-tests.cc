@@ -9,72 +9,187 @@
 #include "dynamic-cast-adaptor.h"
 
 class test : public CppUnit::TestCase {
-public:
-	test();
-	void setUp();
-	void tearDown();
-
 private:
-	void simple_test();
+	void test_range_for();
+	void test_range_for_empty();
+	void test_range_for_no_match();
+	void test_iterator_loop();
+	void test_for_each();
+	void test_any_of();
+	void test_all_of();
+	void test_none_of();
 
 	CPPUNIT_TEST_SUITE(test);
-	CPPUNIT_TEST(simple_test);
+	CPPUNIT_TEST(test_range_for);
+	CPPUNIT_TEST(test_range_for_empty);
+	CPPUNIT_TEST(test_range_for_no_match);
+	CPPUNIT_TEST(test_iterator_loop);
+	CPPUNIT_TEST(test_for_each);
+	CPPUNIT_TEST(test_any_of);
+	CPPUNIT_TEST(test_all_of);
+	CPPUNIT_TEST(test_none_of);
 	CPPUNIT_TEST_SUITE_END();
 };
 
 CPPUNIT_TEST_SUITE_REGISTRATION(test);
 
-test::test()
-{ }
-
-void test::setUp()
-{ }
-
-void test::tearDown()
-{ }
-
-void test::simple_test()
-{ }
-
 class Base {
 public:
+	Base() = default;
+	Base(std::string const& name)
+	:
+		name_(name)
+	{ }
+
+	std::string name() const
+	{
+		return name_;
+	}
+
 	virtual ~Base() = default;
+
+private:
+	std::string name_;
 };
 
 class A : public Base {
 public:
+	using Base::Base;
 };
 
 class B : public Base {
 public:
+	using Base::Base;
 };
 
 class C : public Base {
 public:
+	using Base::Base;
 };
 
-int main(int, char *[])
+std::vector<std::shared_ptr<Base>> make_test_vector()
+{
+	return {
+		std::make_shared<A>("A1"),
+		std::make_shared<B>("B1"),
+		std::make_shared<C>("C1"),
+		std::make_shared<A>("A2"),
+		std::make_shared<B>("B2"),
+		std::make_shared<C>("C2"),
+		std::make_shared<A>("A3"),
+		std::make_shared<B>("B3"),
+		std::make_shared<C>("C3"),
+	};
+}
+
+void test::test_range_for()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	for (auto const& p : caster) {
+		++count;
+	}
+
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_range_for_empty()
+{
+	auto v = std::vector<std::shared_ptr<Base>>{};
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	for (auto const& p : caster) {
+		++count;
+	}
+
+	CPPUNIT_ASSERT_EQUAL(size_t(0), count);
+}
+
+void test::test_range_for_no_match()
 {
 	auto v = std::vector<std::shared_ptr<Base>>{
-		std::make_shared<A>(),
 		std::make_shared<B>(),
 		std::make_shared<C>(),
-		std::make_shared<A>(),
 		std::make_shared<B>(),
 		std::make_shared<C>(),
-		std::make_shared<A>(),
 		std::make_shared<B>(),
 		std::make_shared<C>(),
 	};
-
 	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
-	std::for_each(begin(caster), end(caster), [](std::shared_ptr<A> const&) { });
+	auto count = size_t(0);
 
-	std::find_if(begin(caster), end(caster), [](std::shared_ptr<A> const&) { return false; });
-	std::any_of(begin(caster), end(caster), [](std::shared_ptr<A> const&) { return false; });
-	std::all_of(begin(caster), end(caster), [](std::shared_ptr<A> const&) { return false; });
-	std::none_of(begin(caster), end(caster), [](std::shared_ptr<A> const&) { return false; });
+	for (auto const& p : caster) {
+		++count;
+	}
 
+	CPPUNIT_ASSERT_EQUAL(size_t(0), count);
+}
+
+void test::test_iterator_loop()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	for (auto it = std::begin(caster); it != std::end(caster); ++it) {
+		++count;
+	}
+
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_for_each()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	std::for_each(begin(caster), end(caster), [&count](std::shared_ptr<A> const&) { ++count; });
+
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_any_of()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	auto res = std::any_of(begin(caster), end(caster), [&count](std::shared_ptr<A> const&) { ++count; return false; });
+
+	CPPUNIT_ASSERT(!res);
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_all_of()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	auto res = std::all_of(begin(caster), end(caster), [&count](std::shared_ptr<A> const&) { ++count; return true; });
+
+	CPPUNIT_ASSERT(res);
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_none_of()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	auto res = std::none_of(begin(caster), end(caster), [&count](std::shared_ptr<A> const&) { ++count; return false; });
+
+	CPPUNIT_ASSERT(res);
+	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+int main(int, char *[])
+{
 	auto & registry{CppUnit::TestFactoryRegistry::getRegistry()};
 
 	CppUnit::TextTestRunner runner;
