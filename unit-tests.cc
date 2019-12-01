@@ -20,6 +20,8 @@ private:
 	void test_none_of();
 	void test_find_if();
 	void test_range_adaptor();
+	void test_begin();
+	void test_increment();
 
 	CPPUNIT_TEST_SUITE(test);
 	CPPUNIT_TEST(test_range_for);
@@ -32,6 +34,8 @@ private:
 	CPPUNIT_TEST(test_none_of);
 	CPPUNIT_TEST(test_find_if);
 	CPPUNIT_TEST(test_range_adaptor);
+	CPPUNIT_TEST(test_begin);
+	CPPUNIT_TEST(test_increment);
 	CPPUNIT_TEST_SUITE_END();
 };
 
@@ -215,6 +219,47 @@ void test::test_range_adaptor()
 	}
 
 	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_begin()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(v);
+
+	auto it = std::begin(caster);
+
+	CPPUNIT_ASSERT_EQUAL(std::string("A1"), (*it)->name());
+}
+
+void test::test_increment()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(v);
+
+	auto it = std::begin(caster);
+	using diff_t = std::iterator_traits<decltype(it)>::difference_type;
+
+	CPPUNIT_ASSERT_EQUAL(diff_t(0), std::distance(std::begin(caster), it));
+	CPPUNIT_ASSERT(it != std::end(caster));
+	CPPUNIT_ASSERT_EQUAL(std::string("A1"), (*it)->name());
+
+	++it;
+	CPPUNIT_ASSERT_EQUAL(diff_t(1), std::distance(std::begin(caster), it));
+	CPPUNIT_ASSERT(it != std::end(caster));
+	CPPUNIT_ASSERT_EQUAL(std::string("A2"), (*it)->name());
+
+	++it;
+	CPPUNIT_ASSERT_EQUAL(diff_t(2), std::distance(std::begin(caster), it));
+	CPPUNIT_ASSERT(it != std::end(caster));
+	CPPUNIT_ASSERT_EQUAL(std::string("A3"), (*it)->name());
+
+	++it;
+	CPPUNIT_ASSERT_EQUAL(diff_t(3), std::distance(std::begin(caster), it));
+	CPPUNIT_ASSERT(it == std::end(caster));
+
+	++it;
+	CPPUNIT_ASSERT_EQUAL(diff_t(3), std::distance(std::begin(caster), it));
+	CPPUNIT_ASSERT(it == std::end(caster));
 }
 
 int main(int, char *[])
