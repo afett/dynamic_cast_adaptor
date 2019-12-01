@@ -18,6 +18,7 @@ private:
 	void test_any_of();
 	void test_all_of();
 	void test_none_of();
+	void test_find_if();
 
 	CPPUNIT_TEST_SUITE(test);
 	CPPUNIT_TEST(test_range_for);
@@ -28,6 +29,7 @@ private:
 	CPPUNIT_TEST(test_any_of);
 	CPPUNIT_TEST(test_all_of);
 	CPPUNIT_TEST(test_none_of);
+	CPPUNIT_TEST(test_find_if);
 	CPPUNIT_TEST_SUITE_END();
 };
 
@@ -186,6 +188,18 @@ void test::test_none_of()
 
 	CPPUNIT_ASSERT(res);
 	CPPUNIT_ASSERT_EQUAL(size_t(3), count);
+}
+
+void test::test_find_if()
+{
+	auto v = make_test_vector();
+	auto caster = make_dynamic_cast_adaptor<A>(std::begin(v), std::end(v));
+	auto count = size_t(0);
+
+	auto it = std::find_if(begin(caster), end(caster), [&count](std::shared_ptr<A> const& a) { ++count; return a->name() == "A2"; });
+
+	CPPUNIT_ASSERT_EQUAL(std::string("A2"), (*it)->name());
+	CPPUNIT_ASSERT_EQUAL(size_t(2), count);
 }
 
 int main(int, char *[])
