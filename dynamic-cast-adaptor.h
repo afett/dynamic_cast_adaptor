@@ -132,4 +132,10 @@ dynamic_cast_adaptor<Derived, BaseIt> make_dynamic_cast_adaptor(BaseIt const& be
 	return dynamic_cast_adaptor<Derived, BaseIt>(begin, end);
 }
 
+template <typename Derived, typename Range>
+dynamic_cast_adaptor<Derived, typename Range::const_iterator> make_dynamic_cast_adaptor(Range const& c)
+{
+	return dynamic_cast_adaptor<Derived, typename Range::const_iterator>(std::begin(c), std::end(c));
+}
+
 #endif // DYNAMIC_CAST_ADAPTOR_H
