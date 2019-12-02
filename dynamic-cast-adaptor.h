@@ -48,8 +48,10 @@ public:
 
 	class iterator {
 	public:
+		using base_value_type = typename BaseIt::value_type;
+
 		using difference_type = typename BaseIt::difference_type;
-		using value_type = decltype(std::dynamic_pointer_cast<Derived>(*BaseIt()));
+		using value_type = decltype(std::dynamic_pointer_cast<Derived>(std::declval<base_value_type>()));
 		using pointer = value_type*;
 		using reference = value_type&;
 		using iterator_category = std::input_iterator_tag;
@@ -101,8 +103,7 @@ public:
 
 		BaseIt find_next_derived(BaseIt const& begin, BaseIt const& end) const
 		{
-			using base_ptr_type = decltype(*BaseIt());
-			return std::find_if(begin, end, [](base_ptr_type const& p) {
+			return std::find_if(begin, end, [](base_value_type const& p) {
 				return std::dynamic_pointer_cast<Derived>(p) != nullptr;
 			});
 		}
