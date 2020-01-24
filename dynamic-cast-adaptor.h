@@ -128,15 +128,15 @@ private:
 };
 
 template <typename Derived, typename BaseIt>
-dynamic_cast_adaptor<Derived, BaseIt> make_dynamic_cast_adaptor(BaseIt const& begin, BaseIt const& end)
+auto make_dynamic_cast_adaptor(BaseIt const& begin, BaseIt const& end) -> dynamic_cast_adaptor<Derived, BaseIt>
 {
 	return dynamic_cast_adaptor<Derived, BaseIt>(begin, end);
 }
 
 template <typename Derived, typename Range>
-dynamic_cast_adaptor<Derived, typename Range::const_iterator> make_dynamic_cast_adaptor(Range const& c)
+auto make_dynamic_cast_adaptor(Range const& c) -> dynamic_cast_adaptor<Derived, decltype(std::begin(c))>
 {
-	return dynamic_cast_adaptor<Derived, typename Range::const_iterator>(std::begin(c), std::end(c));
+	return make_dynamic_cast_adaptor<Derived>(std::begin(c), std::end(c));
 }
 
 #endif // DYNAMIC_CAST_ADAPTOR_H
